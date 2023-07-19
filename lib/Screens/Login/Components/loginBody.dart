@@ -207,50 +207,36 @@ class _LoginBodyState extends State<LoginBody> {
 
   Future<void> logIn({required String email, required String password}) async {
     try {
-
-      QuerySnapshot snapshot = await usersCollection
-          .where('userEmail', isEqualTo: email)
-          .where('userPassword', isEqualTo: password)
-          .get();
-      if (snapshot.docs.length == 1) {
-
         var auth = FirebaseAuth.instance;
         UserCredential user = await auth.signInWithEmailAndPassword(
           email: email,
           password: password,
         );
 
-        Navigator.pushNamed(context, HomePage.routeName);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Invalid email or password'),
-          ),
-        );
-      }
-
       Navigator.pushNamed(context, HomePage.routeName);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         // the method "displaySnackBar" isn't displayed on the screen so i replaced it by another SnackBar
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('User not found'),
           ),
         );
       } else if (e.code == 'wrong-password') {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('Wrong password'),
           ),
         );
       }
     } on Exception catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('Something went wrong'),
         ),
       );
     }
+
   }
+
 }
